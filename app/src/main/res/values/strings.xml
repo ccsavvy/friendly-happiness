@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Task Manager</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="signed">Sign Up</string>
+    <string name="already_have_an_account_login">If you have an account, Log in!</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account_sign_in">If you don\'t have account, Register!</string>
+    <string name="successful_login">Successful Login!</string>
+    <string name="logout">Log out</string>
 </resources>
