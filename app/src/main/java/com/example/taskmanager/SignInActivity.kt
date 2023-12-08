@@ -56,13 +56,6 @@ class SignInActivity : Activity() {
         }
 
     }
-    override fun onStart() {
-        super.onStart()
-        if(auth.currentUser != null)
-        {
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-        }
-    }
+
 
 }
