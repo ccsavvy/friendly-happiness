@@ -28,15 +28,15 @@ class LoginActivity : Activity() {
             finish()
         }
 
-        // View Binding
-        val email = binding.emailEt.text.toString()
-        val pass = binding.PassEt.text.toString()
-
         binding.btnLogin.setOnClickListener {
+            // View Binding
+            val email = binding.emailEt.text.toString()
+            val pass = binding.PassEt.text.toString()
+
             if(email.isNotEmpty() && pass.isNotEmpty()) {
                 auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(this) {
                     if (it.isSuccessful) {
-                        Toast.makeText(this, "Successfully LoggedIn", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Successfully Logged In", Toast.LENGTH_SHORT).show()
                         val home = Intent(this, HomeActivity::class.java)
                         startActivity(home)
                         finish()
