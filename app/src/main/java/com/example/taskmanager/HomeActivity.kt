@@ -1,14 +1,14 @@
 package com.example.taskmanager
 
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.taskmanager.databinding.HomeActivityBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.taskmanager.view.AccountFragment
+import com.example.taskmanager.view.HomeFragment
+import com.example.taskmanager.view.SettingsFragment
+import com.example.taskmanager.view.StatisticsFragment
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -21,6 +21,7 @@ class HomeActivity: AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         setContentView(binding.root)
+        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, HomeFragment()).commit()
 
         val bottomNavView = binding.bottomNavigationView
         bottomNavView.background = null
@@ -38,7 +39,7 @@ class HomeActivity: AppCompatActivity() {
                     true
                 }
                 R.id.account -> {
-                    supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, StatisticsFragment()).commit()
+                    supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, AccountFragment()).commit()
                     true
                 }
                 R.id.settings -> {
@@ -48,9 +49,6 @@ class HomeActivity: AppCompatActivity() {
                 else -> false
             }
         }
-
-
-
     }
     private  fun loadFragment(fragment: Fragment){
         val transaction = supportFragmentManager.beginTransaction()
