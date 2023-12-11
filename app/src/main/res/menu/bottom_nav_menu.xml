@@ -10,7 +10,7 @@
     android:title="Statistics"/>
 
     <item
-        android:id="@+id/add"
+        android:id="@+id/newTask"
         android:title=""/>
 
     <item
