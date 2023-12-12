@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.taskmanager.R
 
-class StatisticsFragment : Fragment() {
+class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

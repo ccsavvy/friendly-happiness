@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.taskmanager.R
 import com.google.firebase.auth.FirebaseAuth
 
-class AccountFragment : Fragment() {
+class AccountFragment : Fragment(R.layout.fragment_account) {
 
 
     private lateinit var auth: FirebaseAuth
@@ -31,7 +31,7 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
-        val user =view.findViewById<TextView>(R.id.email)
+        val user = view.findViewById<TextView>(R.id.email)
         user.setText(auth.currentUser?.email)
     }
 

@@ -12,7 +12,7 @@ import com.example.taskmanager.R
 import com.google.firebase.auth.FirebaseAuth
 
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private lateinit var auth: FirebaseAuth
 
