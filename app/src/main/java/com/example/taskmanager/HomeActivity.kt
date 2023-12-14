@@ -12,56 +12,58 @@ import com.example.taskmanager.view.HomeFragment
 import com.example.taskmanager.view.SettingsFragment
 import com.example.taskmanager.view.StatisticsFragment
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 
-
-class HomeActivity: AppCompatActivity() {
+@AndroidEntryPoint
+class HomeActivity : AppCompatActivity() {
     private lateinit var binding: HomeActivityBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var taskViewModel: Task
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = HomeActivityBinding.inflate(layoutInflater)
 
         auth = FirebaseAuth.getInstance()
         setContentView(binding.root)
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, HomeFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, HomeFragment())
+            .commit()
 
         val bottomNavView = binding.bottomNavigationView
         bottomNavView.background = null
         bottomNavView.menu.getItem(2).isEnabled = false
-        bottomNavView.setOnNavigationItemSelectedListener {
-                menuItem ->
+        bottomNavView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.statistics -> {
-                    supportFragmentManager.beginTransaction().replace(binding.fragmentContainer.id, StatisticsFragment()).commit()
+                    loadFragment(StatisticsFragment())
                     true
                 }
 
                 R.id.home -> {
-                    supportFragmentManager.beginTransaction().replace(binding.fragmentContainer.id, HomeFragment()).commit()
+                    loadFragment(HomeFragment())
                     true
                 }
+
                 R.id.account -> {
-                    supportFragmentManager.beginTransaction().replace(binding.fragmentContainer.id, AccountFragment()).commit()
+                    loadFragment(AccountFragment())
                     true
                 }
+
                 R.id.settings -> {
-                    supportFragmentManager.beginTransaction().replace(binding.fragmentContainer.id, SettingsFragment()).commit()
+                    loadFragment(SettingsFragment())
                     true
                 }
+
                 else -> false
             }
         }
         binding.fabAddTask.setOnClickListener {
         }
     }
-    private  fun loadFragment(fragment: Fragment){
+
+    private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragmentContainer,fragment)
+        transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()
     }
-
-
 
 
 }

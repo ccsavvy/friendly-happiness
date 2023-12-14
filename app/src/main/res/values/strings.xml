@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Task Manager</string>
+    <string name="app_name">The ToDo App</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>

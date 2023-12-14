@@ -6,13 +6,14 @@ import com.example.taskmanager.data.TaskDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module   //give dagger instructions on how to create the dependencies that we need
-@InstallIn(ApplicationContext::class) //used throughout the app
+@InstallIn(SingletonComponent::class) //used throughout the app
 object AppModule {
 
     @Provides // we use provide method cause we dont own the classes
@@ -27,7 +28,12 @@ object AppModule {
     @Provides
     fun provideTaskDao(db: TaskDatabase) = db.taskDao()
 
+    @ApplicationScope  //not any coroutine scope, its an application scope, so dagger knows to differentiate between two coroutine scopes
     @Provides
     @Singleton //lives as long as app lives
     fun provideApplicationScope() = CoroutineScope(SupervisorJob()) // co routine gets cancelled when child fails
 }
+
+@Retention(AnnotationRetention.RUNTIME) //qualifier will be visibile for reflection
+@Qualifier //creating annotation
+annotation class  ApplicationScope

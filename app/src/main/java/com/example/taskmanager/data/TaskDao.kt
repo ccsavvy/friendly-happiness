@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM task_table")
-    fun getTasks(): Flow<List<Task>> // flow is asynchronous stream of data, like live data
+    @Query("SELECT * FROM task_table WHERE name LIKE '%' || :searchQuery || '%'")
+    fun getTasks(searchQuery: String): Flow<List<Task>> // flow is asynchronous stream of data, like live data
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: Task) //kotlin coroutine feature , a way to shift this function to a different thread instead of doing on the main thread
