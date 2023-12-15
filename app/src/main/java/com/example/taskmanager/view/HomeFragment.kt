@@ -11,10 +11,12 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.R
 import com.example.taskmanager.tasks.TaskAdapter
 import com.example.taskmanager.tasks.TaskViewModel
 import com.example.taskmanager.databinding.FragmentHomeBinding
+import com.example.taskmanager.tasks.SortOrder
 import com.example.taskmanager.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,6 +51,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             }
         }
+        taskAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+                binding.recyclerViewTasks.scrollToPosition(0)
+            }
+        })
 
         viewModel.tasks.observe(viewLifecycleOwner) {
             taskAdapter.submitList(it)
@@ -70,14 +77,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
        return when(item.itemId){
             R.id.sort_by_name -> {
+                viewModel.sortOrder.value = SortOrder.BY_NAME
                  true
             }
             R.id.sort_by_date_created -> {
+                viewModel.sortOrder.value = SortOrder.BY_DATE
                  true
             }
-           else -> {
-               super.onOptionsItemSelected(item)
+           R.id.hide_completed_tasks -> {
+               item.isChecked = !item.isChecked
+               viewModel.hideCompleted.value = item.isChecked
+               true
            }
+           R.id.delete_all_completed_tasks -> {
+                   true
+           }
+           else -> super.onOptionsItemSelected(item)
         }
     }
 
