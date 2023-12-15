@@ -10,18 +10,22 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.R
+import com.example.taskmanager.data.SortOrder
+import com.example.taskmanager.data.Task
 import com.example.taskmanager.tasks.TaskAdapter
 import com.example.taskmanager.tasks.TaskViewModel
 import com.example.taskmanager.databinding.FragmentHomeBinding
-import com.example.taskmanager.tasks.SortOrder
 import com.example.taskmanager.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickListener {
     private val viewModel: TaskViewModel by viewModels() //doesnt get changed on changing layout
     private lateinit var binding: FragmentHomeBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +46,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val binding = FragmentHomeBinding.bind(view)
 
-        val taskAdapter = TaskAdapter()
+        val taskAdapter = TaskAdapter(this)
         binding.apply {
             recyclerViewTasks.apply {
                 adapter = taskAdapter
@@ -72,21 +76,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         searchView.onQueryTextChanged {
             viewModel.searchQuery.value = it
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            menu.findItem(R.id.hide_completed_tasks).isChecked = viewModel.preferenceFlow.first().hideCompleted
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
        return when(item.itemId){
             R.id.sort_by_name -> {
-                viewModel.sortOrder.value = SortOrder.BY_NAME
+                viewModel.onSortOrderSelected(SortOrder.BY_NAME)
                  true
             }
             R.id.sort_by_date_created -> {
-                viewModel.sortOrder.value = SortOrder.BY_DATE
+                viewModel.onSortOrderSelected(SortOrder.BY_DATE)
                  true
             }
            R.id.hide_completed_tasks -> {
                item.isChecked = !item.isChecked
-               viewModel.hideCompleted.value = item.isChecked
+               viewModel.onHideCompletedClick(item.isChecked)
                true
            }
            R.id.delete_all_completed_tasks -> {
@@ -94,6 +102,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
            }
            else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onItemClick(task: Task) {
+        viewModel.onTaskSelected(task)
+    }
+
+    override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
+        viewModel.onTaskChecked(task, isChecked)
     }
 
 }

@@ -4,9 +4,7 @@ package com.example.taskmanager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.example.taskmanager.databinding.HomeActivityBinding
-import com.example.taskmanager.data.Task
 import com.example.taskmanager.view.AccountFragment
 import com.example.taskmanager.view.HomeFragment
 import com.example.taskmanager.view.SettingsFragment

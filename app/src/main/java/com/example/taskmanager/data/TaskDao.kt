@@ -6,13 +6,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.taskmanager.tasks.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface TaskDao {
-
     fun getTasks(query: String, sortOrder: SortOrder, hideCompleted: Boolean): Flow<List<Task>> =
         when(sortOrder){
             SortOrder.BY_DATE -> getTasksSortedByDate(query,hideCompleted)
