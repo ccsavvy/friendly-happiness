@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickListener {
-    private val viewModel: TaskViewModel by viewModels() //doesnt get changed on changing layout
+    private val viewModel: TaskViewModel by viewModels() //doesn't get changed on changing layout/ outlive lifecycle of activity
     private lateinit var binding: FragmentHomeBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,6 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
                 adapter = taskAdapter
                 layoutManager = LinearLayoutManager(requireContext())
                 setHasFixedSize(true)
-
             }
             ItemTouchHelper(object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {

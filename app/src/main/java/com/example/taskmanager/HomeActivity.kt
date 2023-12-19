@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.taskmanager.databinding.HomeActivityBinding
+import com.example.taskmanager.databinding.HomeCheckActivityBinding
 import com.example.taskmanager.view.AccountFragment
 import com.example.taskmanager.view.HomeFragment
 import com.example.taskmanager.view.SettingsFragment
@@ -25,36 +26,30 @@ class HomeActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, HomeFragment())
             .commit()
 
-        val bottomNavView = binding.bottomNavigationView
-        bottomNavView.background = null
-        bottomNavView.menu.getItem(2).isEnabled = false
-        bottomNavView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.statistics -> {
-                    loadFragment(StatisticsFragment())
-                    true
-                }
-
-                R.id.home -> {
-                    loadFragment(HomeFragment())
-                    true
-                }
-
-                R.id.account -> {
-                    loadFragment(AccountFragment())
-                    true
-                }
-
-                R.id.settings -> {
-                    loadFragment(SettingsFragment())
-                    true
-                }
-
-                else -> false
-            }
-        }
-        binding.fabAddTask.setOnClickListener {
-        }
+//        val bottomNavView = binding.bottomNavigationView
+//        bottomNavView.background = null
+//        bottomNavView.setOnNavigationItemSelectedListener { menuItem ->
+//            when (menuItem.itemId) {
+//                R.id.statistics -> {
+//                    loadFragment(StatisticsFragment())
+//                    true
+//                }
+//
+//                R.id.home -> {
+//                    loadFragment(HomeFragment())
+//                    true
+//                }
+//
+//                R.id.account -> {
+//                    loadFragment(AccountFragment())
+//                    true
+//                }
+//
+//                else -> false
+//            }
+//        }
+//        binding.fabAddTask.setOnClickListener {
+//        }
     }
 
     private fun loadFragment(fragment: Fragment) {

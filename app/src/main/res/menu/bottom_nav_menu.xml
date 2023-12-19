@@ -3,22 +3,14 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/home"
-        android:title="Home"/>
-<item
-    android:id="@+id/statistics"
-    android:icon="@drawable/statistics"
-    android:title="Statistics"/>
-
+        android:title="Home" />
     <item
-        android:id="@+id/newTask"
-        android:title=""/>
+        android:id="@+id/statistics"
+        android:icon="@drawable/statistics"
+        android:title="Statistics" />
 
     <item
         android:id="@+id/account"
         android:icon="@drawable/account"
-        android:title="Account"/>
-    <item
-        android:id="@+id/settings"
-        android:icon="@drawable/settings"
-        android:title="Settings"/>
+        android:title="Account" />
 </menu>
