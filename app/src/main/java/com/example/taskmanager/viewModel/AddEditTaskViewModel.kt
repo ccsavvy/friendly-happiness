@@ -1,11 +1,18 @@
 package com.example.taskmanager.viewModel
 
+import androidx.compose.material3.Snackbar
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.taskmanager.ADD_TASK_RESULT_OK
+import com.example.taskmanager.EDIT_TASK_RESULT_OK
 import com.example.taskmanager.data.Task
 import com.example.taskmanager.data.TaskDao
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,5 +33,45 @@ class AddEditTaskViewModel @Inject constructor(
             field = value
             state["taskDesc"] = value
         }
+
+    private val addEditChannel = Channel<AddEditTaskEvent>()
+    val addEditTaskEvent = addEditChannel.receiveAsFlow()
+
+    fun onSaveClick(){
+        if(taskName.toString().isBlank()){
+            showInvalidInputMessage("Name cannot be empty")
+            return
+        }
+        if (task != null) {
+            val updatedTask = task.copy(name = taskName.toString(), desc = taskDesc.toString())
+            updateTask(updatedTask)
+        } else {
+            val newTask = Task(name = taskName.toString(), desc = taskDesc.toString())
+            createTask(newTask)
+        }
+    }
+
+    fun updateTask(task: Task) = viewModelScope.launch {
+        taskDao.update(task)
+        navigateWithMessage(EDIT_TASK_RESULT_OK)
+    }
+
+    fun createTask(task: Task) = viewModelScope.launch {
+        taskDao.insert(task)
+        navigateWithMessage(ADD_TASK_RESULT_OK)
+    }
+
+    fun showInvalidInputMessage(message: String) = viewModelScope.launch {
+        addEditChannel.send(AddEditTaskEvent.ShowInvalidInputMessage(message))
+    }
+
+    fun navigateWithMessage(result: Int) = viewModelScope.launch {
+        addEditChannel.send(AddEditTaskEvent.NavigateBackWithResult(result))
+    }
+
+    sealed class AddEditTaskEvent {
+        data class ShowInvalidInputMessage(val msg: String) : AddEditTaskEvent()
+        data class NavigateBackWithResult(val result: Int): AddEditTaskEvent()
+    }
 
 }

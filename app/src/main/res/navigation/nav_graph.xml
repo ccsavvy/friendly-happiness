@@ -39,4 +39,21 @@
         android:name="com.example.taskmanager.ui.view.StatisticsFragment"
         android:label="Statistics"
         tools:layout="@layout/fragment_statistics" />
+    <dialog
+        android:id="@+id/deleteAllCompletedDialogFragment"
+        android:name="com.example.taskmanager.ui.view.DeleteAllCompletedDialogFragment"
+        android:label="DeleteAllCompletedDialogFragment" />
+    <action android:id="@+id/action_global_deleteAllCompletedDialogFragment" app:destination="@id/deleteAllCompletedDialogFragment" />
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.example.taskmanager.LoginActivity"
+        android:label="LoginActivity" />
+    <activity
+        android:id="@+id/signInActivity"
+        android:name="com.example.taskmanager.SignInActivity"
+        android:label="SignInActivity" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.taskmanager.MainActivity"
+        android:label="MainActivity" />
 </navigation>

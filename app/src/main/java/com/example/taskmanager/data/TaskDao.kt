@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
-
 @Dao
 interface TaskDao {
     fun getTasks(query: String, sortOrder: SortOrder, hideCompleted: Boolean): Flow<List<Task>> =
@@ -32,5 +31,8 @@ interface TaskDao {
 
     @Delete
     suspend fun delete(task: Task)
+
+    @Query("DELETE FROM task_table WHERE checked = 1")
+    suspend fun deleteCompletedTasks()
 
 }

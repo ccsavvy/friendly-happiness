@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.taskmanager.ADD_TASK_RESULT_OK
+import com.example.taskmanager.EDIT_TASK_RESULT_OK
 import com.example.taskmanager.data.PreferencesManager
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
@@ -24,7 +26,7 @@ class TaskViewModel @Inject constructor(
     private val state: SavedStateHandle
 ) : ViewModel() {
 
-    val searchQuery = state.getLiveData("query", "")
+    val searchQuery = state.getLiveData("query", "") // how "query"?
     val preferenceFlow = preferencesManager.preferencesFlow
 
     private val tasksEventChannel = Channel<TaskEvent>()
@@ -74,11 +76,29 @@ class TaskViewModel @Inject constructor(
         tasksEventChannel.send(TaskEvent.NavigateToAddTaskScreen)
     }
 
+    fun onAddEditResult(result: Int){
+        when(result){
+            ADD_TASK_RESULT_OK -> showTaskSavedConfirmation("Task Added")
+            EDIT_TASK_RESULT_OK -> showTaskSavedConfirmation("Task Updated")
+        }
+    }
+
+    fun showTaskSavedConfirmation(message: String) = viewModelScope.launch {
+        tasksEventChannel.send(TaskEvent.ShowTaskSavedConfirmation(message))
+    }
+
+    fun onDeleteAllCompleted() = viewModelScope.launch {
+        tasksEventChannel.send(TaskEvent.NavigateToDeleteAllCompletedScreen)
+    }
+
     sealed class TaskEvent {  //different variation, can later get warning when the when statement is not exhaustive, there are no other kinds of task events compiler know
         object NavigateToAddTaskScreen : TaskEvent()
         data class NavigateToEditTaskScreen(val task: Task) : TaskEvent()
         data class ShowUndoDeleteTaskMessage(val task: Task) :
             TaskEvent() // generic name cause viewmodel not sure of the view
+        data class ShowTaskSavedConfirmation(val message: String): TaskEvent()
+
+        object NavigateToDeleteAllCompletedScreen: TaskEvent()
     }
 }
 

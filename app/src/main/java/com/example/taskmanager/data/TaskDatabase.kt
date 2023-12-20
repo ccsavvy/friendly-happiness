@@ -25,20 +25,6 @@ abstract class TaskDatabase : RoomDatabase() {
             //db operations
             val dao = database.get().taskDao()
 
-            applicationScope.launch {
-                dao.insert(Task("Wash the dishes", "doing"))
-                dao.insert(Task("Do laundry", "yes"))
-                dao.insert(Task("Have lunch", "doing"))
-                dao.insert(Task("Cook dinner", "done", checked = true))
-                dao.insert(Task("Wash the dishes", "doing"))
-                dao.insert(Task("Do laundry", "yes"))
-                dao.insert(Task("Have lunch", "doing"))
-                dao.insert(Task("Cook dinner", "done", checked = true))
-                dao.insert(Task("Wash the dishes", "doing"))
-                dao.insert(Task("Do laundry", "yes"))
-                dao.insert(Task("Have lunch", "doing"))
-                dao.insert(Task("Cook dinner", "done", checked = true))
-            }
 
         }
     }
