@@ -3,11 +3,40 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment2">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/homeFragment2"
-        android:name="com.example.taskmanager.view.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/homeFragment"
+        android:name="com.example.taskmanager.ui.view.HomeFragment"
+        android:label="ToDoApp"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_addEditTaskFragment"
+            app:destination="@id/addEditTaskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditTaskFragment"
+        android:name="com.example.taskmanager.ui.view.AddEditTaskFragment"
+        android:label="{title}"
+        tools:layout="@layout/fragment_add_edit_task">
+
+        <argument
+            android:name="task"
+            android:defaultValue="@null"
+            app:argType="com.example.taskmanager.data.Task"
+            app:nullable="true" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.example.taskmanager.ui.view.AccountFragment"
+        android:label="Account Settings"
+        tools:layout="@layout/fragment_account" />
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.example.taskmanager.ui.view.StatisticsFragment"
+        android:label="Statistics"
+        tools:layout="@layout/fragment_statistics" />
 </navigation>

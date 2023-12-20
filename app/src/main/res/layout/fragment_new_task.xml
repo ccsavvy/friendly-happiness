@@ -4,17 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".view.NewTaskSheet">
+    tools:context=".ui.view.AddEditTaskFragment">
 
-    <TextView
-        android:id="@+id/taskTitle"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="New Task"
-        android:textSize="30sp" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/taskTitle"-->
+<!--        style="@style/TextAppearance.AppCompat.Title"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:text="New Task"-->
+<!--        android:textSize="30sp" />-->
 
 
     <com.google.android.material.textfield.TextInputLayout

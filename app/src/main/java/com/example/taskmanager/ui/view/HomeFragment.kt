@@ -1,4 +1,4 @@
-package com.example.taskmanager.view
+package com.example.taskmanager.ui.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,15 +11,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.R
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
-import com.example.taskmanager.tasks.TaskAdapter
-import com.example.taskmanager.tasks.TaskViewModel
+import com.example.taskmanager.ui.tasks.TaskAdapter
+import com.example.taskmanager.viewModel.TaskViewModel
 import com.example.taskmanager.databinding.FragmentHomeBinding
+import com.example.taskmanager.util.exhaustive
 import com.example.taskmanager.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.snackbar.Snackbar
@@ -71,6 +73,10 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
                 }
 
             }).attachToRecyclerView(recyclerViewTasks)
+
+            fabAddTask.setOnClickListener{
+                viewModel.onAddNewTaskClick()
+            }
         }
         taskAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
@@ -91,7 +97,16 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
                                 viewModel.onUndoDeleteClick(event.task)
                             }. show()
                     }
-                }
+
+                    is TaskViewModel.TaskEvent.NavigateToAddTaskScreen -> {
+                        val action = HomeFragmentDirections.actionHomeFragmentToAddEditTaskFragment("Add Task")
+                        findNavController().navigate(action) //compiletime safety isntead of navigate(R.id.fragment)
+                    }
+                    is TaskViewModel.TaskEvent.NavigateToEditTaskScreen -> {
+                        val action = HomeFragmentDirections.actionHomeFragmentToAddEditTaskFragment("Edit Task",event.task)
+                        findNavController().navigate(action)
+                    }
+                }.exhaustive
             }
         }
 

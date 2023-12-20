@@ -1,4 +1,4 @@
-package com.example.taskmanager.tasks
+package com.example.taskmanager.ui.tasks
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,7 +9,9 @@ import com.example.taskmanager.data.Task
 import com.example.taskmanager.databinding.ItemTaskBinding
 
 
-class TaskAdapter(private  val listener: onItemClickListener) : ListAdapter<Task, TaskAdapter.TasksViewHolder>(DiffCallback()) {
+class TaskAdapter(private  val listener: onItemClickListener) : ListAdapter<Task, TaskAdapter.TasksViewHolder>(
+    DiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TasksViewHolder {
         val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)

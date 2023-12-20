@@ -3,12 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".view.HomeFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.view.HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_add_task"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_200"
+        android:src="@drawable/add"
+        app:borderWidth="0dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="bottom|end"
+        app:useCompatPadding="true"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

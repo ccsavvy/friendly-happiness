@@ -90,8 +90,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:2.6.2")
 
     // Navigation Component
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.5")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.5")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
 
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
