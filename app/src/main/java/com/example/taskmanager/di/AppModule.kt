@@ -2,6 +2,10 @@ package com.example.taskmanager.di
 
 import android.app.Application
 import androidx.room.Room
+import com.example.taskmanager.auth.AuthRepository
+import com.example.taskmanager.auth.BaseAuthRepository
+import com.example.taskmanager.auth.BaseAuthenticator
+import com.example.taskmanager.auth.FirebaseAuthenticator
 import com.example.taskmanager.data.TaskDatabase
 import dagger.Module
 import dagger.Provides
@@ -32,6 +36,22 @@ object AppModule {
     @Provides
     @Singleton //lives as long as app lives
     fun provideApplicationScope() = CoroutineScope(SupervisorJob()) // co routine gets cancelled when child fails
+
+
+    //this means that anytime we need an authenticator Dagger will provide a Firebase authenticator.
+    //in future if you want to swap out Firebase authentication for your own custom authenticator
+    //you will simply come and swap here.
+    @Singleton
+    @Provides
+    fun provideAuthenticator() : BaseAuthenticator =  FirebaseAuthenticator()
+
+
+    //this just takes the same idea as the authenticator. If we create another repository class
+    //we can simply just swap here
+    @Singleton
+    @Provides
+    fun provideRepository(authenticator : BaseAuthenticator) : BaseAuthRepository = AuthRepository(authenticator)
+
 }
 
 @Retention(AnnotationRetention.RUNTIME) //qualifier will be visibile for reflection

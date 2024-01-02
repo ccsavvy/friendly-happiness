@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.ADD_TASK_RESULT_OK
 import com.example.taskmanager.EDIT_TASK_RESULT_OK
+import com.example.taskmanager.auth.AuthorisationManager
 import com.example.taskmanager.data.PreferencesManager
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
@@ -23,11 +24,14 @@ import javax.inject.Inject
 class TaskViewModel @Inject constructor(
     private val taskDao: TaskDao,
     private val preferencesManager: PreferencesManager,
+    private val authorisationManager: AuthorisationManager,
     private val state: SavedStateHandle
 ) : ViewModel() {
 
     val searchQuery = state.getLiveData("query", "") // how "query"?
     val preferenceFlow = preferencesManager.preferencesFlow
+
+    private val userId = authorisationManager.firebaseAuth.currentUser?.uid ?: "MycJQECdEuUUovrRwZZspWOsDEA2"
 
     private val tasksEventChannel = Channel<TaskEvent>()
     val taskEvent = tasksEventChannel.receiveAsFlow() // receive as flow
@@ -38,7 +42,7 @@ class TaskViewModel @Inject constructor(
     ) { query, filterPreferences ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
-        taskDao.getTasks(query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
+        taskDao.getTasks(userId,query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
     }
     val tasks =
         tasksFlow.asLiveData() //live data is similar to flow, live data has latest value and not whole stream of values

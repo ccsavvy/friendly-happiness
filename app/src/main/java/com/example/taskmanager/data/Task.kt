@@ -13,6 +13,7 @@ data class Task(
     val desc: String,
     val checked: Boolean = false,
     val created: Long = System.currentTimeMillis(),
+    val userID: String,
     @PrimaryKey (autoGenerate = true) val id: Int = 0
 ): Parcelable{
     val createDateFormatted: String

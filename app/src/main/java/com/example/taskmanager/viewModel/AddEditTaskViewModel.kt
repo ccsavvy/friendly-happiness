@@ -1,11 +1,11 @@
 package com.example.taskmanager.viewModel
 
-import androidx.compose.material3.Snackbar
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.ADD_TASK_RESULT_OK
 import com.example.taskmanager.EDIT_TASK_RESULT_OK
+import com.example.taskmanager.auth.AuthorisationManager
 import com.example.taskmanager.data.Task
 import com.example.taskmanager.data.TaskDao
 
@@ -18,10 +18,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     private val taskDao: TaskDao,
+    private val authorisationManager: AuthorisationManager,
     private val state: SavedStateHandle // stores navigation arguments and information
 ): ViewModel() { //process dev, in case of process being stopped or destroyed we add savedinstances
 
     val task = state.get<Task>("task")
+
+    val uId = authorisationManager.firebaseAuth.currentUser?.uid ?: "MycJQECdEuUUovrRwZZspWOsDEA2"
     var taskName = state.get<Task>("taskName")?: task?.name ?: ""
         set(value){ //setter function
             field = value
@@ -46,7 +49,7 @@ class AddEditTaskViewModel @Inject constructor(
             val updatedTask = task.copy(name = taskName.toString(), desc = taskDesc.toString())
             updateTask(updatedTask)
         } else {
-            val newTask = Task(name = taskName.toString(), desc = taskDesc.toString())
+            val newTask = Task(name = taskName.toString(), desc = taskDesc.toString(), userID = uId)
             createTask(newTask)
         }
     }
