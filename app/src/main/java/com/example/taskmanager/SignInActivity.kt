@@ -6,10 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import com.example.taskmanager.databinding.SigninActivityBinding
+import com.example.taskmanager.databinding.SigninBinding
 import com.google.firebase.auth.FirebaseAuth
 
 class SignInActivity : Activity() {
-    private lateinit var binding: SigninActivityBinding
+    private lateinit var binding: SigninBinding
 
     // create Firebase authentication object
     private lateinit var auth: FirebaseAuth
@@ -17,7 +18,7 @@ class SignInActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = SigninActivityBinding.inflate(layoutInflater)
+        binding = SigninBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
         binding.RedirectLogin.setOnClickListener {

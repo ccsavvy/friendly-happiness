@@ -5,19 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.example.taskmanager.databinding.LoginActivityBinding
+import com.example.taskmanager.databinding.LoginBinding
 
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : Activity() {
 
-    private lateinit var binding: LoginActivityBinding
+    private lateinit var binding: LoginBinding
 
     // Creating firebaseAuth object
     lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = LoginActivityBinding.inflate(layoutInflater)
+        binding = LoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
 
@@ -58,6 +59,5 @@ class LoginActivity : Activity() {
             startActivity(intent)
         }
     }
-
 
 }
