@@ -103,8 +103,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
 
         viewModel.tasks.observe(viewLifecycleOwner) { //added observer to livedata
             taskAdapter.submitList(it)
+            if(viewModel.tasks.value.isNullOrEmpty())
+                binding.noTask.visibility = View.VISIBLE
+            else
+                binding.noTask.visibility = View.GONE
         }
-
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.taskEvent.collect { event ->
