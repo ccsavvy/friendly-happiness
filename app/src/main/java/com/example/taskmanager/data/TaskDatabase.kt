@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
 
-@Database(entities = [Task::class], version = 2, exportSchema = false)
+@Database(entities = [Task::class], version = 7, exportSchema = false)
 abstract class TaskDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
 
@@ -22,10 +22,12 @@ abstract class TaskDatabase : RoomDatabase() {
         override fun onCreate(db: SupportSQLiteDatabase) { // first time when we create the database, called after build method
             super.onCreate(db)
 
-            //db operations
             val dao = database.get().taskDao()
 
+        }
 
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            super.onOpen(db)
         }
     }
 }

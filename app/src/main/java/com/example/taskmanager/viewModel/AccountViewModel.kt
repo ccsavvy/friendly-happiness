@@ -3,7 +3,6 @@ package com.example.taskmanager.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.taskmanager.auth.AuthorisationManager
 import com.example.taskmanager.auth.BaseAuthRepository
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +21,5 @@ class AccountViewModel @Inject constructor(private val repository: BaseAuthRepos
         firebaseUser.postValue(user)
     }
 
-    fun signOut(){
-        repository.signOut()
-        getCurrentUser()
-    }
+
 }

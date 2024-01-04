@@ -16,11 +16,20 @@ interface TaskDao {
             SortOrder.BY_NAME -> getTasksSortedByName(userId,query, hideCompleted)
         }
 
+
     @Query("SELECT * FROM task_table WHERE (checked != :hideCompleted OR checked = 0) AND userID == :userId AND name LIKE '%' || :searchQuery || '%' ORDER BY name ASC")
     fun getTasksSortedByName(userId: String, searchQuery: String, hideCompleted: Boolean): Flow<List<Task>> // flow is asynchronous stream of data, like live data
 
+    @Query("SELECT * FROM task_table WHERE (checked != :hideCompleted OR checked = 0) AND name LIKE '%' || :searchQuery || '%' ORDER BY name ASC")
+    fun getTaskSorted(searchQuery: String, hideCompleted: Boolean): Flow<List<Task>> // flow is asynchronous stream of data, like live data
+
     @Query("SELECT * FROM task_table WHERE (checked != :hideCompleted OR checked = 0) AND userID == :userId AND name LIKE '%' || :searchQuery || '%' ORDER BY created ASC")
     fun getTasksSortedByDate(userId: String, searchQuery: String, hideCompleted: Boolean): Flow<List<Task>> // flow is asynchronous stream of data, like live data
+    @Query("SELECT * FROM task_table")
+    fun getAllTasks(): Flow<List<Task>>
+
+    @Query("SELECT * FROM task_table WHERE (checked = 1) AND userID == :userId")
+    fun getCompletedTasks(userId: String): Flow<List<Task>> // flow is asynchronous stream of data, like live data
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: Task) //kotlin coroutine feature , a way to shift this function to a different thread instead of doing on the main thread

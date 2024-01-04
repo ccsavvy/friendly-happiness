@@ -1,13 +1,15 @@
 package com.example.taskmanager.viewModel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.ADD_TASK_RESULT_OK
 import com.example.taskmanager.EDIT_TASK_RESULT_OK
-import com.example.taskmanager.auth.AuthorisationManager
+import com.example.taskmanager.auth.AuthRepository
 import com.example.taskmanager.data.Task
 import com.example.taskmanager.data.TaskDao
+import com.google.firebase.auth.FirebaseUser
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -18,13 +20,14 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     private val taskDao: TaskDao,
-    private val authorisationManager: AuthorisationManager,
+    private val repository: AuthRepository,
     private val state: SavedStateHandle // stores navigation arguments and information
 ): ViewModel() { //process dev, in case of process being stopped or destroyed we add savedinstances
 
     val task = state.get<Task>("task")
 
-    val uId = authorisationManager.firebaseAuth.currentUser?.uid ?: "MycJQECdEuUUovrRwZZspWOsDEA2"
+    private val firebaseUser = MutableLiveData<FirebaseUser?>()
+    val currentUser get() = firebaseUser
     var taskName = state.get<Task>("taskName")?: task?.name ?: ""
         set(value){ //setter function
             field = value
@@ -49,8 +52,10 @@ class AddEditTaskViewModel @Inject constructor(
             val updatedTask = task.copy(name = taskName.toString(), desc = taskDesc.toString())
             updateTask(updatedTask)
         } else {
-            val newTask = Task(name = taskName.toString(), desc = taskDesc.toString(), userID = uId)
-            createTask(newTask)
+            currentUser.value?.let {
+                val newTask = Task(name = taskName.toString(), desc = taskDesc.toString(), userID = it.uid)
+                createTask(newTask)
+            }
         }
     }
 
@@ -71,6 +76,11 @@ class AddEditTaskViewModel @Inject constructor(
     fun navigateWithMessage(result: Int) = viewModelScope.launch {
         addEditChannel.send(AddEditTaskEvent.NavigateBackWithResult(result))
     }
+
+    fun getCurrentUser() = viewModelScope.launch {
+        firebaseUser.postValue(repository.getCurrentUser())
+    }
+
 
     sealed class AddEditTaskEvent {
         data class ShowInvalidInputMessage(val msg: String) : AddEditTaskEvent()

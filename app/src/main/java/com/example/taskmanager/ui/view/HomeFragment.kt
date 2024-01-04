@@ -1,5 +1,6 @@
 package com.example.taskmanager.ui.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,10 +13,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.taskmanager.HomeActivity
+import com.example.taskmanager.MainActivity
 import com.example.taskmanager.R
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
@@ -26,6 +30,7 @@ import com.example.taskmanager.util.exhaustive
 import com.example.taskmanager.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -42,6 +47,9 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        getUser()
+        //getTasks()
+        registerObservers()
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -49,10 +57,11 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val binding = FragmentHomeBinding.bind(view)
 
         val taskAdapter = TaskAdapter(this)
+        setHasOptionsMenu(true)
+
         binding.apply {
             recyclerViewTasks.apply {
                 adapter = taskAdapter
@@ -96,6 +105,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
             taskAdapter.submitList(it)
         }
 
+
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.taskEvent.collect { event ->
                 when (event) {
@@ -109,7 +119,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
                     is TaskViewModel.TaskEvent.NavigateToAddTaskScreen -> {
                         val action =
                             HomeFragmentDirections.actionHomeFragmentToAddEditTaskFragment("Add Task")
-                        findNavController().navigate(action) //compiletime safety isntead of navigate(R.id.fragment)
+                        findNavController().navigate(action) //compiletime safety instead of navigate(R.id.fragment)
                     }
 
                     is TaskViewModel.TaskEvent.NavigateToEditTaskScreen -> {
@@ -125,14 +135,13 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
                     }
 
                     TaskViewModel.TaskEvent.NavigateToDeleteAllCompletedScreen -> {
-                        val action = HomeFragmentDirections.actionGlobalDeleteAllCompletedDialogFragment()
+                        val action =
+                            HomeFragmentDirections.actionGlobalDeleteAllCompletedDialogFragment()
                         findNavController().navigate(action)
                     }
                 }.exhaustive
             }
         }
-
-        setHasOptionsMenu(true)
 
     }
 
@@ -142,7 +151,7 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
         searchView = searchItem.actionView as SearchView
 
         val pendingQuery = viewModel.searchQuery.value
-        if(!pendingQuery.isNullOrEmpty()){
+        if (!pendingQuery.isNullOrEmpty()) {
             searchItem.expandActionView()
             searchView.setQuery(pendingQuery, false)
         }
@@ -195,6 +204,20 @@ class HomeFragment : Fragment(R.layout.fragment_home), TaskAdapter.onItemClickLi
 
     override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
         viewModel.onTaskChecked(task, isChecked)
+    }
+
+    private fun getUser() {
+        viewModel.getCurrentUser()
+    }
+
+
+    private fun registerObservers() {
+        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            user?.let {
+                viewModel.initTask()
+            } ?: startActivity(Intent(requireContext(), MainActivity::class.java))
+
+        }
     }
 
 }

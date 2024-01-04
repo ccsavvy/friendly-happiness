@@ -115,9 +115,6 @@ class AuthViewModel @Inject constructor(
             user?.let {
                 eventsChannel.send(AllEvents.Message("Logout failure"))
             } ?: eventsChannel.send(AllEvents.Message("Sign out successful"))
-
-
-            getCurrentUser()
         } catch (e: Exception) {
             val error = e.toString().split(":").toTypedArray()
             Log.d(TAG, "signInUser: ${error[1]}")

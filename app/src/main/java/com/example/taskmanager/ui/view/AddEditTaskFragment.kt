@@ -1,7 +1,10 @@
 package com.example.taskmanager.ui.view
 
+
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -10,17 +13,26 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+
 import com.example.taskmanager.R
 import com.example.taskmanager.databinding.FragmentAddEditTaskBinding
 import com.example.taskmanager.util.exhaustive
 import com.example.taskmanager.viewModel.AddEditTaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+
 
 @AndroidEntryPoint
 class AddEditTaskFragment: Fragment(R.layout.fragment_add_edit_task) {
     private val viewModel: AddEditTaskViewModel by viewModels()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        getUser()
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentAddEditTaskBinding.bind(view)
@@ -60,6 +72,11 @@ class AddEditTaskFragment: Fragment(R.layout.fragment_add_edit_task) {
                 }.exhaustive
             }
         }
+    }
+
+
+    fun getUser(){
+        viewModel.getCurrentUser()
     }
 
 

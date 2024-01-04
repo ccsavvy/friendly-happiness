@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_addEditTaskFragment"
             app:destination="@id/addEditTaskFragment" />
+        <action
+            android:id="@+id/action_homeFragment_self"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditTaskFragment"

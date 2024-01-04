@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 class SignUpFragment : Fragment(R.layout.fragment_signup) {
 
     private val viewModel: AuthViewModel by viewModels()
-    private lateinit var binding: FragmentSignupBinding
+    private var binding: FragmentSignupBinding? = null
 
     var TAG = "SignUpFragment"
 
@@ -35,7 +35,7 @@ class SignUpFragment : Fragment(R.layout.fragment_signup) {
         binding = FragmentSignupBinding.inflate(inflater, container, false)
         registerObservers()
         listenToChannels()
-        binding.apply {
+        binding?.apply {
             signButton.setOnClickListener {
                 val email = emailEt.text.toString()
                 val password = PassEt.text.toString()
@@ -48,7 +48,7 @@ class SignUpFragment : Fragment(R.layout.fragment_signup) {
                 findNavController().navigate(R.id.action_signUpFragment_to_loginFragment)
             }
         }
-        return binding.root
+        return binding?.root
     }
 
     private fun registerObservers() {
@@ -100,6 +100,11 @@ class SignUpFragment : Fragment(R.layout.fragment_signup) {
 
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
     }
 
 }

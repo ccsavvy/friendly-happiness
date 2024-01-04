@@ -1,5 +1,6 @@
 package com.example.taskmanager.viewModel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
@@ -7,14 +8,19 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.ADD_TASK_RESULT_OK
 import com.example.taskmanager.EDIT_TASK_RESULT_OK
-import com.example.taskmanager.auth.AuthorisationManager
+import com.example.taskmanager.auth.AuthRepository
 import com.example.taskmanager.data.PreferencesManager
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
 import com.example.taskmanager.data.TaskDao
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -24,28 +30,46 @@ import javax.inject.Inject
 class TaskViewModel @Inject constructor(
     private val taskDao: TaskDao,
     private val preferencesManager: PreferencesManager,
-    private val authorisationManager: AuthorisationManager,
+    private val repository: AuthRepository,
     private val state: SavedStateHandle
 ) : ViewModel() {
 
     val searchQuery = state.getLiveData("query", "") // how "query"?
     val preferenceFlow = preferencesManager.preferencesFlow
 
-    private val userId = authorisationManager.firebaseAuth.currentUser?.uid ?: "MycJQECdEuUUovrRwZZspWOsDEA2"
+    private val firebaseUser = MutableLiveData<FirebaseUser?>()
+    val currentUser get() = firebaseUser
 
     private val tasksEventChannel = Channel<TaskEvent>()
     val taskEvent = tasksEventChannel.receiveAsFlow() // receive as flow
 
-    private val tasksFlow = combine(
-        searchQuery.asFlow(),
-        preferenceFlow
-    ) { query, filterPreferences ->
-        Pair(query, filterPreferences)
-    }.flatMapLatest { (query, filterPreferences) ->
-        taskDao.getTasks(userId,query, filterPreferences.sortOrder, filterPreferences.hideCompleted)
+    var tasks = MutableLiveData<List<Task>>()
+
+    fun initTask() {
+        viewModelScope.launch {
+
+            val searchQuery = state.getLiveData("query", "") // how "query"?
+            val preferenceFlow = preferencesManager.preferencesFlow
+
+            combine(
+                searchQuery.asFlow(), preferenceFlow
+            ) { query, filterPreferences ->
+                Pair(query, filterPreferences)
+            }.flatMapLatest { (query, filterPreferences) ->
+                currentUser.value?.let { user ->
+                    taskDao.getTasks(
+                        user.uid,
+                        query,
+                        filterPreferences.sortOrder,
+                        filterPreferences.hideCompleted
+                    )
+                } ?: emptyFlow()
+            }.collect { taskitem ->
+                tasks.postValue(taskitem)
+            }
+
+        }
     }
-    val tasks =
-        tasksFlow.asLiveData() //live data is similar to flow, live data has latest value and not whole stream of values
 
     fun onSortOrderSelected(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.updateSortOrder(sortOrder)
@@ -80,8 +104,8 @@ class TaskViewModel @Inject constructor(
         tasksEventChannel.send(TaskEvent.NavigateToAddTaskScreen)
     }
 
-    fun onAddEditResult(result: Int){
-        when(result){
+    fun onAddEditResult(result: Int) {
+        when (result) {
             ADD_TASK_RESULT_OK -> showTaskSavedConfirmation("Task Added")
             EDIT_TASK_RESULT_OK -> showTaskSavedConfirmation("Task Updated")
         }
@@ -95,14 +119,17 @@ class TaskViewModel @Inject constructor(
         tasksEventChannel.send(TaskEvent.NavigateToDeleteAllCompletedScreen)
     }
 
+    fun getCurrentUser() = viewModelScope.launch {
+        firebaseUser.postValue(repository.getCurrentUser())
+    }
+
     sealed class TaskEvent {  //different variation, can later get warning when the when statement is not exhaustive, there are no other kinds of task events compiler know
         object NavigateToAddTaskScreen : TaskEvent()
         data class NavigateToEditTaskScreen(val task: Task) : TaskEvent()
         data class ShowUndoDeleteTaskMessage(val task: Task) :
             TaskEvent() // generic name cause viewmodel not sure of the view
-        data class ShowTaskSavedConfirmation(val message: String): TaskEvent()
-
-        object NavigateToDeleteAllCompletedScreen: TaskEvent()
+        data class ShowTaskSavedConfirmation(val message: String) : TaskEvent()
+        object NavigateToDeleteAllCompletedScreen : TaskEvent()
     }
 }
 

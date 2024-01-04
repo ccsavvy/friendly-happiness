@@ -1,5 +1,6 @@
 package com.example.taskmanager.ui.view
 
+//import com.example.taskmanager.BuildConfig
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -22,7 +23,7 @@ import kotlinx.coroutines.launch
 class LoginFragment: Fragment(R.layout.fragment_login) {
 
     private val viewModel: AuthViewModel by viewModels()
-    private lateinit var binding: FragmentLoginBinding
+    private var binding: FragmentLoginBinding? = null
     private val TAG = "LogInFragment"
 
     override fun onCreateView(
@@ -34,7 +35,13 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         getUser()
         registerObservers()
         listenToChannels()
-        binding.apply {
+        binding?.apply {
+
+            //if(BuildConfig.DEBUG) {
+                emailEt.setText("aditya01@gmail.com")
+                PassEt.setText("123456")
+            //}
+
             btnLogin.setOnClickListener {
                 viewModel.signInUser(email = emailEt.text.toString(), password = PassEt.text.toString())
             }
@@ -42,9 +49,8 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
             signUpRedirect.setOnClickListener {
                 findNavController().navigate(R.id.action_loginFragment_to_signUpFragment)
             }
-
         }
-        return binding.root
+        return binding?.root
     }
 
     private fun getUser(){
@@ -89,6 +95,11 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
 
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
     }
 
 }
