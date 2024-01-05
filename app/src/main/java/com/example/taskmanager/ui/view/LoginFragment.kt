@@ -1,6 +1,5 @@
 package com.example.taskmanager.ui.view
 
-//import com.example.taskmanager.BuildConfig
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.taskmanager.BuildConfig
 import com.example.taskmanager.HomeActivity
 import com.example.taskmanager.R
 import com.example.taskmanager.databinding.FragmentLoginBinding
@@ -37,10 +37,10 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         listenToChannels()
         binding?.apply {
 
-            //if(BuildConfig.DEBUG) {
+            if(BuildConfig.DEBUG) {
                 emailEt.setText("aditya01@gmail.com")
                 PassEt.setText("123456")
-            //}
+            }
 
             btnLogin.setOnClickListener {
                 viewModel.signInUser(email = emailEt.text.toString(), password = PassEt.text.toString())
