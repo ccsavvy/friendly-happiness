@@ -27,6 +27,8 @@ interface TaskDao {
     fun getTasksSortedByDate(userId: String, searchQuery: String, hideCompleted: Boolean): Flow<List<Task>> // flow is asynchronous stream of data, like live data
     @Query("SELECT * FROM task_table")
     fun getAllTasks(): Flow<List<Task>>
+    @Query("SELECT * FROM task_table WHERE userID == :userId")
+    fun getAllTasksById(userId: String): Flow<List<Task>>
 
     @Query("SELECT * FROM task_table WHERE (checked = 1) AND userID == :userId")
     fun getCompletedTasks(userId: String): Flow<List<Task>> // flow is asynchronous stream of data, like live data
