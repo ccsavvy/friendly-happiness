@@ -60,6 +60,15 @@
             android:layout_marginHorizontal="20dp"
             tools:text="Date created:" />
 
+        <ImageView
+                android:id="@+id/imgAttachment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@android:drawable/ic_menu_add"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="20dp"
+                android:scaleType="centerInside" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="match_parent"
