@@ -46,7 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
-        viewBinding= true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -110,4 +110,7 @@ dependencies {
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    //Pie Chart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
