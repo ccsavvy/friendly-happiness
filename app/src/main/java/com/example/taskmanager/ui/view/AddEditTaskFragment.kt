@@ -1,10 +1,15 @@
 package com.example.taskmanager.ui.view
 
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -56,15 +61,25 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
              * ToDo:
              * Feel free to change the design and behavior.
              * Also if you are moving code to ViewModel as we discussed earlier,
-             * you can move this click listner as well.
+             * you can move this click listener as well.
              * */
+
+            val launcher = registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
+                    val data = result.data
+                }
+            }
+
             imgAttachment.setOnClickListener {
-                FilePicker.Builder(requireActivity() as AppCompatActivity?)
+                FilePicker.Builder(requireActivity() as AppCompatActivity?, launcher)
                     .pick(1)
                     .anything()
                     .fromAnywhere()
                     .and { fileUri -> imgAttachment.setImageURI(fileUri) }
                     .now()
+
             }
             saveButton.setOnClickListener {
                 viewModel.onSaveClick()
@@ -89,7 +104,6 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
             }
         }
     }
-
 
     fun getUser() {
         viewModel.getCurrentUser()

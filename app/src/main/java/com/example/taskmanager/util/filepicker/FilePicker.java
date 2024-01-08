@@ -1,15 +1,26 @@
 package com.example.taskmanager.util.filepicker;
 
+import static androidx.activity.result.ActivityResultCallerKt.registerForActivityResult;
+
 import android.app.Activity;
+import android.content.Intent;
+import android.provider.MediaStore;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.lang.ref.WeakReference;
+
 
 public class FilePicker {
 
     private final WeakReference<AppCompatActivity> context;
+
+    private ActivityResultLauncher<Intent> launcher;
+
     private FileConfig config;
 
     private FilePicker(Builder builder) {
@@ -17,6 +28,8 @@ public class FilePicker {
         this.config = builder.config;
 
         checkPickType(builder.context);
+
+        this.launcher = builder.launcher;
     }
 
     private void checkPickType(WeakReference<AppCompatActivity> context) {
@@ -61,29 +74,42 @@ public class FilePicker {
     }
 
     /**
-     * ToDo : Implement the following methods. Make sure they support from Android 10 to
-     * Android 14. Use the minimum permissions possible. My guess is you may need to create
-     * a new activity and trigger from following functions because usual way to get these files
-     * is using Intent with startActivityForResult(), but I suggest you check the latest practice
-     * and see if there are newer/better ways available.
+     * ToDo : Implement the following methods.
+     * Make sure they support from Android 10 to Android 14.
+     * Use the minimum permissions possible. My guess is you
+     * may need to create a new activity and
+     * trigger from following functions because
+     * usual way to get these files is using Intent with startActivityForResult(), but I
+     * suggest you check the latest practice and
+     * see if there are newer/better ways available.
      */
 
+    //RegisterForActivityResult check out
     private void pickItemUsingCamera(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Toast.makeText(context.get(), "To Do", Toast.LENGTH_SHORT).show();
+        Intent target = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        target.setType(MIME);
+        Intent intent = Intent.createChooser(target, "HI");
+        launcher.launch(intent);
     }
 
     private void pickItemUsingGallery(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Toast.makeText(context.get(), "To Do", Toast.LENGTH_SHORT).show();
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        galleryIntent.setType(MIME);
+        Intent intent = Intent.createChooser(galleryIntent, "HI");
+        launcher.launch(intent);
     }
 
     private void pickItemUsingFileManager(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Toast.makeText(context.get(), "To Do", Toast.LENGTH_SHORT).show();
+        Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        fileIntent.setType(MIME);
+        Intent intent = Intent.createChooser(fileIntent, "HI");
+        launcher.launch(intent);
     }
 
     private String getItemMIMEType(PickObject pickObject) {
@@ -108,8 +134,11 @@ public class FilePicker {
         private final WeakReference<AppCompatActivity> context;
         private FileConfig config;
 
-        public Builder(AppCompatActivity context) {
+        private final ActivityResultLauncher<Intent> launcher;
+
+        public Builder(AppCompatActivity context, ActivityResultLauncher<Intent> launcher) {
             this.context = new WeakReference<>(context);
+            this.launcher = launcher;
             config = new FileConfig();
         }
 
