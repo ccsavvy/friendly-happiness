@@ -2,12 +2,10 @@ package com.example.taskmanager.ui.view
 
 
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -71,7 +69,6 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                     val data = result.data
                 }
             }
-
             imgAttachment.setOnClickListener {
                 FilePicker.Builder(requireActivity() as AppCompatActivity?, launcher)
                     .pick(1)
@@ -79,7 +76,6 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                     .fromAnywhere()
                     .and { fileUri -> imgAttachment.setImageURI(fileUri) }
                     .now()
-
             }
             saveButton.setOnClickListener {
                 viewModel.onSaveClick()

@@ -13,9 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.taskmanager.MainActivity
 import com.example.taskmanager.R
 import com.example.taskmanager.databinding.FragmentAccountBinding
-import com.example.taskmanager.viewModel.AccountViewModel
 import com.example.taskmanager.viewModel.AuthViewModel
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

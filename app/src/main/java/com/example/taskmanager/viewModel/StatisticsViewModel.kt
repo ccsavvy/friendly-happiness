@@ -1,10 +1,6 @@
 package com.example.taskmanager.viewModel
 
-import android.app.Application
 import android.graphics.Color
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,13 +8,11 @@ import com.example.taskmanager.R
 import com.example.taskmanager.auth.AuthRepository
 import com.example.taskmanager.data.Task
 import com.example.taskmanager.data.TaskDao
-import com.example.taskmanager.di.ApplicationScope
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject

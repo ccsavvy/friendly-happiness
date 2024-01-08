@@ -13,24 +13,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.taskmanager.HomeActivity
 import com.example.taskmanager.MainActivity
 import com.example.taskmanager.R
 import com.example.taskmanager.data.SortOrder
 import com.example.taskmanager.data.Task
-import com.example.taskmanager.ui.tasks.TaskAdapter
-import com.example.taskmanager.viewModel.TaskViewModel
 import com.example.taskmanager.databinding.FragmentHomeBinding
+import com.example.taskmanager.ui.tasks.TaskAdapter
 import com.example.taskmanager.util.exhaustive
 import com.example.taskmanager.util.onQueryTextChanged
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.taskmanager.viewModel.TaskViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.async
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 

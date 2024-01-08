@@ -1,6 +1,5 @@
 package com.example.taskmanager.ui.view
 
-import android.animation.Animator
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle

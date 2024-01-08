@@ -2,19 +2,16 @@ package com.example.taskmanager
 
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.taskmanager.databinding.HomeActivityBinding
-import com.example.taskmanager.ui.view.HomeFragment
 
 import dagger.hilt.android.AndroidEntryPoint
 
