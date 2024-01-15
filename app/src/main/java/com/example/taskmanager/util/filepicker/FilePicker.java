@@ -2,11 +2,15 @@ package com.example.taskmanager.util.filepicker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 
@@ -83,19 +87,23 @@ public class FilePicker {
     private void pickItemUsingCamera(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Intent target = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        target.setType(MIME);
-        Intent intent = Intent.createChooser(target, "HI");
-        launcher.launch(intent);
+        Intent captureIntent= new Intent();
+        if(config.getPickObject().equals(PickObject.IMAGE))
+             captureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        else if(config.getPickObject().equals(PickObject.VIDEO))
+            captureIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
+
+       // captureIntent.putExtra(MediaStore.EXTRA_OUTPUT,"uri");
+
+        launcher.launch(captureIntent);
     }
 
     private void pickItemUsingGallery(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         galleryIntent.setType(MIME);
-        Intent intent = Intent.createChooser(galleryIntent, "HI");
-        launcher.launch(intent);
+        launcher.launch(galleryIntent);
     }
 
     private void pickItemUsingFileManager(WeakReference<AppCompatActivity> context) {
@@ -103,8 +111,7 @@ public class FilePicker {
         int quantity = config.getQuantity();
         Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         fileIntent.setType(MIME);
-        Intent intent = Intent.createChooser(fileIntent, "HI");
-        launcher.launch(intent);
+        launcher.launch(fileIntent);
     }
 
     private String getItemMIMEType(PickObject pickObject) {
@@ -244,4 +251,6 @@ public class FilePicker {
             return value;
         }
     }
+
+
 }

@@ -1,12 +1,18 @@
 package com.example.taskmanager.ui.view
 
 
+import android.R.attr.data
 import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -24,6 +30,9 @@ import com.example.taskmanager.util.filepicker.FilePicker
 import com.example.taskmanager.viewModel.AddEditTaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 @AndroidEntryPoint
@@ -55,6 +64,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
             desc.addTextChangedListener {
                 viewModel.taskDesc = it.toString()
             }
+
             /**
              * ToDo:
              * Feel free to change the design and behavior.
@@ -62,13 +72,31 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
              * you can move this click listener as well.
              * */
 
-            val launcher = registerForActivityResult(
-                ActivityResultContracts.StartActivityForResult()
-            ) { result: ActivityResult ->
-                if (result.resultCode == RESULT_OK) {
-                    val data = result.data
+
+            val launcher =
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //type of result here ActivityResultContracts.StartActivityForResult- is used for launching activities and getting results.
+                    val uri = it.data?.data
+                    binding.imgAttachment.setImageURI(uri)
+                    Log.e("URI",uri.toString())
+
+                    /**
+                     * ToDo:
+                     * Need to check by the uri of image using the putExtra
+                     */
+                    //If picture taken from camera
+                    val photo = it.data?.extras?.get("data") as Bitmap?
+                    binding.imgAttachment.setImageBitmap(photo)
+
+//                    val isCameraResult = it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true
+//
+//                    if (isCameraResult) {
+//                        val fileUri = uri
+//                        binding.imgAttachment.setImageURI(fileUri)
+//                    } else {
+//                        binding.imgAttachment.setImageURI(uri)
+//                    }
                 }
-            }
+
             imgAttachment.setOnClickListener {
                 FilePicker.Builder(requireActivity() as AppCompatActivity?, launcher)
                     .pick(1)
