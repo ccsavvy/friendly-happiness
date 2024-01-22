@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 
@@ -83,19 +84,44 @@ public class FilePicker {
      * see if there are newer/better ways available.
      */
 
+    String currentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                "example",  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
     //RegisterForActivityResult check out
     private void pickItemUsingCamera(WeakReference<AppCompatActivity> context) {
         String MIME = getItemMIMEType(config.getPickObject());
         int quantity = config.getQuantity();
-        Intent captureIntent= new Intent();
-        if(config.getPickObject().equals(PickObject.IMAGE))
-             captureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        else if(config.getPickObject().equals(PickObject.VIDEO))
+        Intent captureIntent = new Intent();
+        if (config.getPickObject().equals(PickObject.IMAGE))
+            captureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        else if (config.getPickObject().equals(PickObject.VIDEO))
             captureIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
 
-       // captureIntent.putExtra(MediaStore.EXTRA_OUTPUT,"uri");
-
-        launcher.launch(captureIntent);
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            if (photoFile != null) {
+                Uri uri = FileProvider.getUriForFile(
+                        context.get(),
+                        "com.example.taskmanager.provider", photoFile
+                );
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                launcher.launch(captureIntent);
+            }
+        //launcher.launch(captureIntent);
     }
 
     private void pickItemUsingGallery(WeakReference<AppCompatActivity> context) {

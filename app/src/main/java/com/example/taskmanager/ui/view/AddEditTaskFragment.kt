@@ -1,13 +1,9 @@
 package com.example.taskmanager.ui.view
 
 
-import android.R.attr.data
-import android.app.Activity.RESULT_OK
-import android.content.Intent
+
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -81,20 +77,15 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
 
                     /**
                      * ToDo:
-                     * Need to check by the uri of image using the putExtra
+                     * Empty Intent passed when passing ås extra
                      */
-                    //If picture taken from camera
-                    val photo = it.data?.extras?.get("data") as Bitmap?
-                    binding.imgAttachment.setImageBitmap(photo)
 
-//                    val isCameraResult = it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true
-//
-//                    if (isCameraResult) {
-//                        val fileUri = uri
-//                        binding.imgAttachment.setImageURI(fileUri)
-//                    } else {
-//                        binding.imgAttachment.setImageURI(uri)
-//                    }
+                    //If picture taken from camera
+                    if(it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true){
+                        val photo = it.data?.extras?.get("data") as Bitmap?
+                        MediaStore.Images.Media.insertImage(activity?.contentResolver, photo, "Example" , "Cameratest");
+                        binding.imgAttachment.setImageBitmap(photo)
+                    }
                 }
 
             imgAttachment.setOnClickListener {
