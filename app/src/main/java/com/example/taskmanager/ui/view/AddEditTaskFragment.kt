@@ -1,14 +1,15 @@
 package com.example.taskmanager.ui.view
 
 
-
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -22,13 +23,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.taskmanager.R
 import com.example.taskmanager.databinding.FragmentAddEditTaskBinding
 import com.example.taskmanager.util.exhaustive
+import com.example.taskmanager.util.filepicker.FileCallback
 import com.example.taskmanager.util.filepicker.FilePicker
+import com.example.taskmanager.util.filepicker.FilePicker.PickObject
 import com.example.taskmanager.viewModel.AddEditTaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 
 
 @AndroidEntryPoint
@@ -73,7 +73,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                 registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //type of result here ActivityResultContracts.StartActivityForResult- is used for launching activities and getting results.
                     val uri = it.data?.data
                     binding.imgAttachment.setImageURI(uri)
-                    Log.e("URI",uri.toString())
+                    Log.e("URI", uri.toString())
 
                     /**
                      * ToDo:
@@ -81,19 +81,58 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                      */
 
                     //If picture taken from camera
-                    if(it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true){
+                    if (it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true) {
                         val photo = it.data?.extras?.get("data") as Bitmap?
-                        MediaStore.Images.Media.insertImage(activity?.contentResolver, photo, "Example" , "Cameratest");
+                        MediaStore.Images.Media.insertImage(
+                            activity?.contentResolver,
+                            photo,
+                            "Example",
+                            "Cameratest"
+                        );
                         binding.imgAttachment.setImageBitmap(photo)
                     }
                 }
+
+            // java.lang.IllegalArgumentException:
+            // One of either RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED is required
 
             imgAttachment.setOnClickListener {
                 FilePicker.Builder(requireActivity() as AppCompatActivity?, launcher)
                     .pick(1)
                     .anything()
                     .fromAnywhere()
-                    .and { fileUri -> imgAttachment.setImageURI(fileUri) }
+                    .and(object : FileCallback {
+                        override fun onFileSelected(
+                            fileUri: Uri,
+                            pickObject: PickObject
+                        ) {
+                            when (pickObject) {
+                                PickObject.IMAGE -> {
+                                    imgAttachment.setImageURI(fileUri)
+                                }
+
+                                PickObject.VIDEO -> {
+                                    //ToDo
+                                }
+
+                                PickObject.FILE -> {
+                                    //ToDo
+                                }
+
+                                PickObject.ANY_THING -> {
+                                    //Ignore
+                                }
+                            }
+                        }
+
+                        override fun onOperationCancelled() {
+                            Toast.makeText(
+                                requireContext(),
+                                "Operation cancelled",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
                     .now()
             }
             saveButton.setOnClickListener {

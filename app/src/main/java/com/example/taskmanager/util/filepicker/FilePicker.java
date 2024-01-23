@@ -1,26 +1,29 @@
 package com.example.taskmanager.util.filepicker;
 
+import static com.example.taskmanager.util.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_FAILURE;
+import static com.example.taskmanager.util.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_SUCCESS;
+import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICKED_ITEM_URI;
+import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICK_FROM;
+import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICK_OBJECT;
+
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+import androidx.core.content.ContextCompat;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 
 public class FilePicker {
 
     private final WeakReference<AppCompatActivity> context;
-
-    private ActivityResultLauncher<Intent> launcher;
-
     private FileConfig config;
 
     private FilePicker(Builder builder) {
@@ -28,8 +31,6 @@ public class FilePicker {
         this.config = builder.config;
 
         checkPickType(builder.context);
-
-        this.launcher = builder.launcher;
     }
 
     private void checkPickType(WeakReference<AppCompatActivity> context) {
@@ -59,97 +60,46 @@ public class FilePicker {
         }
     }
 
+    private BroadcastReceiver filePickerResultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            context.unregisterReceiver(filePickerResultReceiver);
+            if (Objects.equals(intent.getAction(), ACTION_PICKED_ITEM_FAILURE)) {
+                config.getFileCallback().onOperationCancelled();
+            } else {
+                try {
+                    Uri pickedFileUri = (Uri) intent.getExtras().get(EXTRA_PICKED_ITEM_URI);
+                    config.getFileCallback().onFileSelected(
+                            pickedFileUri,
+                            config.getPickObject()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    config.getFileCallback().onOperationCancelled();
+                }
+            }
+        }
+    };
+
     private void proceedFilePicking(WeakReference<AppCompatActivity> context) {
-        switch (config.getPickFrom()) {
-            case CAMERA:
-                pickItemUsingCamera(context);
-                break;
-            case GALLERY:
-                pickItemUsingGallery(context);
-                break;
-            case FILE_MANAGER:
-                pickItemUsingFileManager(context);
-                break;
-        }
-    }
 
-    /**
-     * ToDo : Implement the following methods.
-     * Make sure they support from Android 10 to Android 14.
-     * Use the minimum permissions possible. My guess is you
-     * may need to create a new activity and
-     * trigger from following functions because
-     * usual way to get these files is using Intent with startActivityForResult(), but I
-     * suggest you check the latest practice and
-     * see if there are newer/better ways available.
-     */
-
-    String currentPhotoPath;
-
-    private File createImageFile() throws IOException {
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                "example",  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_PICKED_ITEM_SUCCESS);
+        filter.addAction(ACTION_PICKED_ITEM_FAILURE);
+        ContextCompat.registerReceiver(
+                context.get(),
+                filePickerResultReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
         );
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
 
-    //RegisterForActivityResult check out
-    private void pickItemUsingCamera(WeakReference<AppCompatActivity> context) {
-        String MIME = getItemMIMEType(config.getPickObject());
-        int quantity = config.getQuantity();
-        Intent captureIntent = new Intent();
-        if (config.getPickObject().equals(PickObject.IMAGE))
-            captureIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        else if (config.getPickObject().equals(PickObject.VIDEO))
-            captureIntent.setAction(MediaStore.ACTION_VIDEO_CAPTURE);
-
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            if (photoFile != null) {
-                Uri uri = FileProvider.getUriForFile(
-                        context.get(),
-                        "com.example.taskmanager.provider", photoFile
-                );
-                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                launcher.launch(captureIntent);
-            }
-        //launcher.launch(captureIntent);
-    }
-
-    private void pickItemUsingGallery(WeakReference<AppCompatActivity> context) {
-        String MIME = getItemMIMEType(config.getPickObject());
-        int quantity = config.getQuantity();
-        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        galleryIntent.setType(MIME);
-        launcher.launch(galleryIntent);
-    }
-
-    private void pickItemUsingFileManager(WeakReference<AppCompatActivity> context) {
-        String MIME = getItemMIMEType(config.getPickObject());
-        int quantity = config.getQuantity();
-        Intent fileIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        fileIntent.setType(MIME);
-        launcher.launch(fileIntent);
-    }
-
-    private String getItemMIMEType(PickObject pickObject) {
-        switch (pickObject) {
-            case IMAGE:
-                return "image/*";
-            case VIDEO:
-                return "video/*";
-            case FILE:
-                return "file/*";
-        }
-        return "*/*";
+        Intent filePickerIntent = new Intent(context.get(), FilePickerActivity.class);
+        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        filePickerIntent.putExtra(EXTRA_PICK_OBJECT, config.getPickObject().ordinal());
+        filePickerIntent.putExtra(EXTRA_PICK_FROM, config.getPickFrom().ordinal());
+        context.get().startActivity(filePickerIntent);
     }
 
     public FileConfig getConfig() {
@@ -257,6 +207,8 @@ public class FilePicker {
         public int getValue() {
             return value;
         }
+
+
     }
 
     public enum PickFrom {
