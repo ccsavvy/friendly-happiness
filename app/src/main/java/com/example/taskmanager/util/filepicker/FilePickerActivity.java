@@ -1,10 +1,13 @@
 package com.example.taskmanager.util.filepicker;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
@@ -20,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -171,7 +175,8 @@ public class FilePickerActivity extends AppCompatActivity {
                         Uri documentUri = result.getData() != null ? result.getData().getData() : null;
                         if (documentUri != null) {
                             String documentType = getContentResolver().getType(documentUri);
-                            if (documentType == null) documentType = "application/pdf";
+                            if (documentType == null)
+                                documentType = "application/pdf";
 
                             if (documentType.startsWith("image")) {
                                 handleImageResult(documentUri);
@@ -219,6 +224,12 @@ public class FilePickerActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                            MediaStore.Images.Media.insertImage(getContentResolver(), emptyFilePath, "FILE_" + timeStamp, "Picture from Camera");
+                        } catch (FileNotFoundException e) {
+                            handleOperationCancelled();
+                        }
                         handleImageResult(Uri.fromFile(new File(emptyFilePath)));
                     } else {
                         handleOperationCancelled();
@@ -234,6 +245,17 @@ public class FilePickerActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         handleVideoResult(Uri.fromFile(new File(emptyFilePath)));
+
+                        //TODO: Save video to gallery
+                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                        ContentValues values = new ContentValues();
+                        values.put(MediaStore.Video.Media.TITLE, "FILE_" + timeStamp);
+                        values.put(MediaStore.Video.Media.DISPLAY_NAME, "FILE_" + timeStamp);
+                        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+                        values.put(MediaStore.Video.Media.DATA, emptyFilePath);
+                        values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
+                        getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+
                     } else {
                         handleOperationCancelled();
                     }
@@ -241,6 +263,7 @@ public class FilePickerActivity extends AppCompatActivity {
             }
     );
 
+    @SuppressLint("StaticFieldLeak")
     private void pickVideoFromCamera() {
         if (!hasCameraPermission()) {
             requestCameraPermission();
@@ -259,16 +282,16 @@ public class FilePickerActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onPostExecute(File photoFile) {
-                if (photoFile != null) {
-                    Uri photoURI = FileProvider.getUriForFile(
+            protected void onPostExecute(File videoFile) {
+                if (videoFile != null) {
+                    Uri videoURI = FileProvider.getUriForFile(
                             FilePickerActivity.this,
                             getPackageName() + ".provider",
-                            photoFile
+                            videoFile
                     );
 
                     Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-                    takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
                     takeVideoLauncher.launch(
                             Intent.createChooser(takeVideoIntent, "Select Camera")
                     );
@@ -277,6 +300,7 @@ public class FilePickerActivity extends AppCompatActivity {
         }.execute();
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void pickImageFromCamera() {
         if (!hasCameraPermission()) {
             requestCameraPermission();
@@ -375,6 +399,7 @@ public class FilePickerActivity extends AppCompatActivity {
         sendBroadcast(intent);
         finish();
     }
+
 
     // endregion
 

@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.view.AddEditTaskFragment"
-    >
+    tools:context=".ui.view.AddEditTaskFragment">
     <!--    <TextView-->
     <!--        android:id="@+id/taskTitle"-->
     <!--        style="@style/TextAppearance.AppCompat.Title"-->
@@ -60,14 +59,48 @@
             android:layout_marginHorizontal="20dp"
             tools:text="Date created:" />
 
-        <ImageView
+        <Button
+            android:id="@+id/addMedia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add Media" />
+
+        <RelativeLayout
+            android:id="@+id/mediaAttachment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
                 android:id="@+id/imgAttachment"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:src="@android:drawable/ic_menu_add"
-                android:layout_marginVertical="20dp"
                 android:layout_marginHorizontal="20dp"
-                android:scaleType="centerInside" />
+                android:layout_marginVertical="20dp"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_add" />
+
+            <VideoView
+                android:id="@+id/videoAttachment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="20dp"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_add" />
+
+            <com.github.barteksc.pdfviewer.PDFView
+                android:id="@+id/docAttachment"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="20dp"
+                android:scaleType="centerInside"
+                tools:ignore="WebViewLayout" />
+        </RelativeLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"

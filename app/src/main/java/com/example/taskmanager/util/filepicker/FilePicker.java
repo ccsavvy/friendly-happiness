@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -24,7 +23,7 @@ import java.util.Objects;
 public class FilePicker {
 
     private final WeakReference<AppCompatActivity> context;
-    private FileConfig config;
+    private final FileConfig config;
 
     private FilePicker(Builder builder) {
         this.context = builder.context;
@@ -60,12 +59,12 @@ public class FilePicker {
         }
     }
 
-    private BroadcastReceiver filePickerResultReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver filePickerResultReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             context.unregisterReceiver(filePickerResultReceiver);
             if (Objects.equals(intent.getAction(), ACTION_PICKED_ITEM_FAILURE)) {
-                config.getFileCallback().onOperationCancelled();
+                config.getFileCallback().onOperationCancelled("item failure");
             } else {
                 try {
                     Uri pickedFileUri = (Uri) intent.getExtras().get(EXTRA_PICKED_ITEM_URI);
@@ -75,7 +74,7 @@ public class FilePicker {
                     );
                 } catch (Exception e) {
                     e.printStackTrace();
-                    config.getFileCallback().onOperationCancelled();
+                    config.getFileCallback().onOperationCancelled(e.toString());
                 }
             }
         }
@@ -90,13 +89,14 @@ public class FilePicker {
                 context.get(),
                 filePickerResultReceiver,
                 filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
+                ContextCompat.RECEIVER_EXPORTED
         );
 
         Intent filePickerIntent = new Intent(context.get(), FilePickerActivity.class);
-        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY); //the new activity is not kept in the history stack.
+        // filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //the activity being launched is already running in the current task,
+        // then instead of launching a new instance of that activity, all of the other activities on top of it will be closed and this Intent will be delivered to the (now on top) old activity as a new Intent.
+        filePickerIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS); //the new activity is not kept in the list of recently launched activities.
         filePickerIntent.putExtra(EXTRA_PICK_OBJECT, config.getPickObject().ordinal());
         filePickerIntent.putExtra(EXTRA_PICK_FROM, config.getPickFrom().ordinal());
         context.get().startActivity(filePickerIntent);
@@ -110,13 +110,10 @@ public class FilePicker {
 
         // Required params
         private final WeakReference<AppCompatActivity> context;
-        private FileConfig config;
+        private final FileConfig config;
 
-        private final ActivityResultLauncher<Intent> launcher;
-
-        public Builder(AppCompatActivity context, ActivityResultLauncher<Intent> launcher) {
+        public Builder(AppCompatActivity context) {
             this.context = new WeakReference<>(context);
-            this.launcher = launcher;
             config = new FileConfig();
         }
 
@@ -207,8 +204,6 @@ public class FilePicker {
         public int getValue() {
             return value;
         }
-
-
     }
 
     public enum PickFrom {
@@ -229,6 +224,4 @@ public class FilePicker {
             return value;
         }
     }
-
-
 }

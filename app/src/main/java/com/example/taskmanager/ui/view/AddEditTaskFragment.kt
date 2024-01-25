@@ -1,16 +1,17 @@
 package com.example.taskmanager.ui.view
 
 
-import android.graphics.Bitmap
+import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.widget.MediaController
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -60,44 +61,15 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
             desc.addTextChangedListener {
                 viewModel.taskDesc = it.toString()
             }
+            videoAttachment.setMediaController(MediaController(context))
+            videoAttachment.requestFocus()
 
-            /**
-             * ToDo:
-             * Feel free to change the design and behavior.
-             * Also if you are moving code to ViewModel as we discussed earlier,
-             * you can move this click listener as well.
-             * */
-
-
-            val launcher =
-                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //type of result here ActivityResultContracts.StartActivityForResult- is used for launching activities and getting results.
-                    val uri = it.data?.data
-                    binding.imgAttachment.setImageURI(uri)
-                    Log.e("URI", uri.toString())
-
-                    /**
-                     * ToDo:
-                     * Empty Intent passed when passing ås extra
-                     */
-
-                    //If picture taken from camera
-                    if (it.data?.hasExtra(MediaStore.EXTRA_OUTPUT) == true) {
-                        val photo = it.data?.extras?.get("data") as Bitmap?
-                        MediaStore.Images.Media.insertImage(
-                            activity?.contentResolver,
-                            photo,
-                            "Example",
-                            "Cameratest"
-                        );
-                        binding.imgAttachment.setImageBitmap(photo)
-                    }
-                }
 
             // java.lang.IllegalArgumentException:
             // One of either RECEIVER_EXPORTED or RECEIVER_NOT_EXPORTED is required
 
-            imgAttachment.setOnClickListener {
-                FilePicker.Builder(requireActivity() as AppCompatActivity?, launcher)
+            addMedia.setOnClickListener {
+                FilePicker.Builder(requireActivity() as AppCompatActivity?)
                     .pick(1)
                     .anything()
                     .fromAnywhere()
@@ -106,17 +78,32 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                             fileUri: Uri,
                             pickObject: PickObject
                         ) {
+
                             when (pickObject) {
                                 PickObject.IMAGE -> {
+                                    mediaAttachment.visibility = View.VISIBLE
+                                    imgAttachment.visibility = View.VISIBLE
+                                    videoAttachment.visibility = View.GONE
+                                    docAttachment.visibility = View.GONE
                                     imgAttachment.setImageURI(fileUri)
                                 }
 
                                 PickObject.VIDEO -> {
-                                    //ToDo
+                                    mediaAttachment.visibility = View.VISIBLE
+                                    imgAttachment.visibility = View.GONE
+                                    videoAttachment.visibility = View.VISIBLE
+                                    docAttachment.visibility = View.GONE
+                                    videoAttachment.setVideoURI(fileUri)
+                                    videoAttachment.seekTo(1)
                                 }
 
                                 PickObject.FILE -> {
-                                    //ToDo
+                                    mediaAttachment.visibility = View.VISIBLE
+                                    docAttachment.visibility = View.VISIBLE
+                                    imgAttachment.visibility = View.GONE
+                                    videoAttachment.visibility = View.GONE
+
+                                    docAttachment.fromUri(fileUri).load()
                                 }
 
                                 PickObject.ANY_THING -> {
@@ -125,10 +112,10 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                             }
                         }
 
-                        override fun onOperationCancelled() {
+                        override fun onOperationCancelled(e: String?) {
                             Toast.makeText(
                                 requireContext(),
-                                "Operation cancelled",
+                                e,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

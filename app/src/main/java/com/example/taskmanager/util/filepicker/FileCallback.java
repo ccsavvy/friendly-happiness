@@ -10,5 +10,5 @@ public interface FileCallback {
             @NonNull FilePicker.PickObject pickObject
     );
 
-    void onOperationCancelled();
+    void onOperationCancelled(String e);
 }
