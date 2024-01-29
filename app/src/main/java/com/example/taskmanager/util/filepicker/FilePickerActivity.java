@@ -2,6 +2,7 @@ package com.example.taskmanager.util.filepicker;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import androidx.activity.result.ActivityResult;
@@ -17,16 +20,20 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 
 public class FilePickerActivity extends AppCompatActivity {
 
@@ -244,17 +251,12 @@ public class FilePickerActivity extends AppCompatActivity {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        handleVideoResult(Uri.fromFile(new File(emptyFilePath)));
+                        File file = new File(emptyFilePath);
+                        handleVideoResult(Uri.fromFile(file));
 
-                        //TODO: Save video to gallery
-                        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                        ContentValues values = new ContentValues();
-                        values.put(MediaStore.Video.Media.TITLE, "FILE_" + timeStamp);
-                        values.put(MediaStore.Video.Media.DISPLAY_NAME, "FILE_" + timeStamp);
-                        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-                        values.put(MediaStore.Video.Media.DATA, emptyFilePath);
-                        values.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
-                        getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            addVideoToGalleryAPI29(file,"FILE_"+System.currentTimeMillis());
+                        }
 
                     } else {
                         handleOperationCancelled();
@@ -262,6 +264,50 @@ public class FilePickerActivity extends AppCompatActivity {
                 }
             }
     );
+
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    public void addVideoToGalleryAPI29(
+            File file,
+            String displayName
+    ) {
+        String savePath = Environment.DIRECTORY_DCIM + File.separator + file.getName();
+        ContentValues cv = new ContentValues();
+        cv.put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + File.separator + new File(savePath).getName());
+        cv.put(MediaStore.Video.Media.TITLE, displayName + ".mp4");
+        cv.put(MediaStore.Video.Media.DISPLAY_NAME, displayName + ".mp4");
+        cv.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+        cv.put(MediaStore.Video.Media.DATE_ADDED, System.currentTimeMillis() / 1000);
+        cv.put(MediaStore.Video.Media.DATE_TAKEN, System.currentTimeMillis());
+        cv.put(MediaStore.Video.Media.IS_PENDING, 1);
+
+        ContentResolver resolver = getContentResolver();
+        Uri collection = MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+        Uri uriSavedVideo = resolver.insert(collection, cv);
+
+        try (ParcelFileDescriptor pfd = resolver.openFileDescriptor(uriSavedVideo, "w")) {
+            if (pfd != null) {
+                try {
+                    FileOutputStream out = new FileOutputStream(pfd.getFileDescriptor());
+                    FileInputStream inputStream = new FileInputStream(file);
+                    byte[] buf = new byte[8192];
+                    int len;
+                    while ((len = inputStream.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    out.close();
+                    inputStream.close();
+                    cv.clear();
+                    cv.put(MediaStore.Video.Media.IS_PENDING, 0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                resolver.update(uriSavedVideo, cv, null, null);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @SuppressLint("StaticFieldLeak")
     private void pickVideoFromCamera() {
