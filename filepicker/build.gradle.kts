@@ -1,7 +1,14 @@
+import com.android.build.gradle.internal.utils.createPublishingInfoForLibrary
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    id("maven-publish")
 }
+
+var groupId = "com.ncs.ankitha"
+var artifactId = "awesome-filepicker"
+var version = "1.0.0"
 
 android {
     namespace = "com.example.filepicker"
@@ -41,3 +48,18 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = groupId
+                artifactId = artifactId
+                version = version
+            }
+        }
+    }
+}
+
+
