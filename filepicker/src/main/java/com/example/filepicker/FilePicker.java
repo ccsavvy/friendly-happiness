@@ -1,10 +1,11 @@
-package com.example.taskmanager.util.filepicker;
+package com.example.filepicker;
 
-import static com.example.taskmanager.util.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_FAILURE;
-import static com.example.taskmanager.util.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_SUCCESS;
-import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICKED_ITEM_URI;
-import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICK_FROM;
-import static com.example.taskmanager.util.filepicker.FilePickerActivity.EXTRA_PICK_OBJECT;
+
+import static com.example.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_FAILURE;
+import static com.example.filepicker.FilePickerActivity.ACTION_PICKED_ITEM_SUCCESS;
+import static com.example.filepicker.FilePickerActivity.EXTRA_PICKED_ITEM_URI;
+import static com.example.filepicker.FilePickerActivity.EXTRA_PICK_FROM;
+import static com.example.filepicker.FilePickerActivity.EXTRA_PICK_OBJECT;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;

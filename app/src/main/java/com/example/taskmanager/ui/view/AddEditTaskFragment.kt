@@ -1,15 +1,11 @@
 package com.example.taskmanager.ui.view
 
 
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
 import android.widget.MediaController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,12 +17,11 @@ import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.filepicker.FileCallback
+import com.example.filepicker.FilePicker
 import com.example.taskmanager.R
 import com.example.taskmanager.databinding.FragmentAddEditTaskBinding
 import com.example.taskmanager.util.exhaustive
-import com.example.taskmanager.util.filepicker.FileCallback
-import com.example.taskmanager.util.filepicker.FilePicker
-import com.example.taskmanager.util.filepicker.FilePicker.PickObject
 import com.example.taskmanager.viewModel.AddEditTaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,11 +71,11 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                     .and(object : FileCallback {
                         override fun onFileSelected(
                             fileUri: Uri,
-                            pickObject: PickObject
+                            pickObject: FilePicker.PickObject
                         ) {
 
                             when (pickObject) {
-                                PickObject.IMAGE -> {
+                                FilePicker.PickObject.IMAGE -> {
                                     mediaAttachment.visibility = View.VISIBLE
                                     imgAttachment.visibility = View.VISIBLE
                                     videoAttachment.visibility = View.GONE
@@ -88,7 +83,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                                     imgAttachment.setImageURI(fileUri)
                                 }
 
-                                PickObject.VIDEO -> {
+                                FilePicker.PickObject.VIDEO -> {
                                     mediaAttachment.visibility = View.VISIBLE
                                     imgAttachment.visibility = View.GONE
                                     videoAttachment.visibility = View.VISIBLE
@@ -97,7 +92,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                                     videoAttachment.seekTo(1)
                                 }
 
-                                PickObject.FILE -> {
+                                FilePicker.PickObject.FILE -> {
                                     mediaAttachment.visibility = View.VISIBLE
                                     docAttachment.visibility = View.VISIBLE
                                     imgAttachment.visibility = View.GONE
@@ -106,7 +101,7 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
                                     docAttachment.fromUri(fileUri).load()
                                 }
 
-                                PickObject.ANY_THING -> {
+                                FilePicker.PickObject.ANY_THING -> {
                                     //Ignore
                                 }
                             }

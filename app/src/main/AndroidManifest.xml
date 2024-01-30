@@ -53,7 +53,7 @@
                 android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar" />
 
         <activity
-                android:name=".util.filepicker.FilePickerActivity"
+                android:name="com.example.filepicker.FilePickerActivity"
                 android:exported="false"
                 android:theme="@style/Theme.NoDisplay"
                 android:launchMode="singleInstance" />

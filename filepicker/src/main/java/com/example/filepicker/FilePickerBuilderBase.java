@@ -1,4 +1,4 @@
-package com.example.taskmanager.util.filepicker;
+package com.example.filepicker;
 
 public interface FilePickerBuilderBase {
 

@@ -115,6 +115,8 @@ dependencies {
     //Pie Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    
+
     implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
+
+    implementation(project(":filepicker"))
 }
