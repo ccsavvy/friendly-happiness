@@ -9,9 +9,15 @@
     <string name="don_t_have_an_account_sign_in">If you don\'t have account, Register!</string>
     <string name="successful_login">Successful Login!</string>
     <string name="logout">Log out</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="checkbox">CheckBox</string>
     <string name="place_holder">Place Holder</string>
     <string name="no_tasks">No tasks. Add a new task!</string>
+    <string name="cancel">Cancel</string>
+    <string name="schedule">Schedule</string>
+    <string name="notification_title">Notif Test</string>
+    <string name="notification_subtitle">Just a test</string>
+
+    <string name="notification_schedule_title">Schedule notification:\u00a0</string>
+    <string name="notification_schedule_error">Notification failed</string>
+    <string name="notification_schedule_pattern">dd.MM.yy \u00B7 HH:mm</string>
 </resources>

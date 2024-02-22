@@ -119,4 +119,8 @@ dependencies {
     implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
 
     implementation(project(":filepicker"))
+
+    //Work manager
+    implementation("androidx.work:work-runtime:2.9.0")
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
 }

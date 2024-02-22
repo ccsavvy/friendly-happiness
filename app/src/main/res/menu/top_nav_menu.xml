@@ -34,6 +34,5 @@
         android:id="@+id/delete_all_completed_tasks"
         android:title="Delete all completed"
         app:showAsAction="never"
-        android:visible="false"
         />
 </menu>

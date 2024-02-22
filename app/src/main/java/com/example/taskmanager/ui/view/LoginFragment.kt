@@ -37,11 +37,6 @@ class LoginFragment: Fragment(R.layout.fragment_login) {
         listenToChannels()
         binding?.apply {
 
-            if(BuildConfig.DEBUG) {
-                emailEt.setText("aditya01@gmail.com")
-                PassEt.setText("123456")
-            }
-
             btnLogin.setOnClickListener {
                 viewModel.signInUser(email = emailEt.text.toString(), password = PassEt.text.toString())
             }
