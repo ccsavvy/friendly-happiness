@@ -31,13 +31,12 @@ import com.example.taskmanager.R
 class NotifyWork(context: Context, params: WorkerParameters) : Worker(context, params) {
     override fun doWork(): Result {
         val id = inputData.getLong(NOTIFICATION_ID, 0).toInt()
-        sendNotification(id)
-
+        val taskName = inputData.getString(NOTIFICATION_TITLE).toString()
+        sendNotification(id, taskName)
         return success()
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
-    private fun sendNotification(id: Int) {
+    private fun sendNotification(id: Int, taskName: String) {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(NOTIFICATION_ID, id)
@@ -45,22 +44,24 @@ class NotifyWork(context: Context, params: WorkerParameters) : Worker(context, p
         val notificationManager =
             applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        val bitmap = applicationContext.vectorToBitmap(R.drawable.ic_schedule_black)
-        // TODO: Add task and task description
-        val titleNotification = applicationContext.getString(R.string.notification_title)
-        val subtitleNotification = applicationContext.getString(R.string.notification_subtitle)
-        val pendingIntent = getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT )
+        val titleNotification = notificationTitle
+        val subtitleNotification = taskName
+        val pendingIntent = getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         // TODO: Check what the pendingIntent. flag
         val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL)
-            .setLargeIcon(bitmap).setSmallIcon(R.drawable.ic_schedule_white)
+            .setSmallIcon(R.drawable.ic_schedule_white)
             .setContentTitle(titleNotification).setContentText(subtitleNotification)
             .setDefaults(DEFAULT_ALL).setContentIntent(pendingIntent).setAutoCancel(true)
 
         notification.priority = PRIORITY_MAX
 
         if (SDK_INT >= O) {
-
-
             notification.setChannelId(NOTIFICATION_CHANNEL)
 
             val ringtoneManager = getDefaultUri(TYPE_NOTIFICATION)
@@ -70,8 +71,7 @@ class NotifyWork(context: Context, params: WorkerParameters) : Worker(context, p
             val channel =
                 NotificationChannel(NOTIFICATION_CHANNEL, NOTIFICATION_NAME, IMPORTANCE_HIGH)
 
-            channel.enableLights(true)
-            channel.lightColor = RED
+
             channel.enableVibration(true)
             channel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
             channel.setSound(ringtoneManager, audioAttributes)
@@ -81,10 +81,14 @@ class NotifyWork(context: Context, params: WorkerParameters) : Worker(context, p
         notificationManager.notify(id, notification.build())
     }
 
+    private val notificationTitle = "ToDo App Reminder"
+
     companion object {
         const val NOTIFICATION_ID = "taskManager_notification_id"
+        const val NOTIFICATION_TITLE = "taskManager_notification_title"
         const val NOTIFICATION_NAME = "taskManager"
         const val NOTIFICATION_CHANNEL = "taskManager_channel_01"
         const val NOTIFICATION_WORK = "taskManager_notification_work"
     }
+
 }

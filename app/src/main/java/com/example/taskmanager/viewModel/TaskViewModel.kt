@@ -10,7 +10,7 @@ import com.example.taskmanager.EDIT_TASK_RESULT_OK
 import com.example.taskmanager.auth.AuthRepository
 import com.example.taskmanager.data.PreferencesManager
 import com.example.taskmanager.data.SortOrder
-import com.example.taskmanager.data.Task
+import com.example.taskmanager.di.Task
 import com.example.taskmanager.data.TaskDao
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel

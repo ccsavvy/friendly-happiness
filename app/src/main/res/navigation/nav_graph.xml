@@ -26,14 +26,11 @@
         <argument
             android:name="task"
             android:defaultValue="@null"
-            app:argType="com.example.taskmanager.data.Task"
+            app:argType="com.example.taskmanager.di.Task"
             app:nullable="true" />
         <argument
             android:name="title"
             app:argType="string" />
-        <action
-            android:id="@+id/action_addEditTaskFragment_to_dateTimePickerDialogFragment"
-            app:destination="@id/dateTimePickerDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/accountFragment"
@@ -50,9 +47,4 @@
         android:name="com.example.taskmanager.ui.view.DeleteAllCompletedDialogFragment"
         android:label="DeleteAllCompletedDialogFragment" />
     <action android:id="@+id/action_global_deleteAllCompletedDialogFragment" app:destination="@id/deleteAllCompletedDialogFragment" />
-    <dialog
-        android:id="@+id/dateTimePickerDialogFragment"
-        android:name="com.example.taskmanager.ui.view.DateTimePickerDialogFragment"
-        android:label="DateTimePickerDialogFragment" />
-    <action android:id="@+id/action_global_dateTimePickerDialogFragment" app:destination="@id/dateTimePickerDialogFragment" />
 </navigation>

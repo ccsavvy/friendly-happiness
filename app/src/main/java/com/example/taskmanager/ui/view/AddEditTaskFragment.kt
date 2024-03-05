@@ -6,7 +6,6 @@ import android.app.TimePickerDialog
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.example.filepicker.FileCallback
@@ -35,9 +33,7 @@ import com.example.taskmanager.util.exhaustive
 import com.example.taskmanager.viewModel.AddEditTaskViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
@@ -175,31 +171,8 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
             }
             saveButton.setOnClickListener {
 
-                // TODO: clean up calendar and put in viewmodel
                 // TODO: add conditions if time or date is not set
-                val customTime = customCalendar.timeInMillis
-                val currentTime = System.currentTimeMillis()
-                if (customTime > currentTime) {
-                    val data = Data.Builder().putInt(NotifyWork.NOTIFICATION_ID, 0).build()
-                    val delay = customTime - currentTime
-                    Log.e("delay", "Delay: $delay")
-                    scheduleNotification(delay, data)
-
-                    val titleNotificationSchedule = "Schedule notification:\\u00a0"
-                    val patternNotificationSchedule = "dd.MM.yy \\u00B7 HH:mm"
-                    // TODO: remove later
-
-                    Toast.makeText(
-                        requireContext(), titleNotificationSchedule + SimpleDateFormat(
-                            patternNotificationSchedule, Locale.getDefault()
-                        ).format(customCalendar.time), Toast.LENGTH_LONG
-                    ).show()
-
-
-                } else {
-                    val errorNotificationSchedule = "Notification failed"
-                    Toast.makeText(context, errorNotificationSchedule, Toast.LENGTH_LONG).show()
-                }
+                viewModel.custCalendar = customCalendar.timeInMillis
                 viewModel.onSaveClick()
             }
         }
@@ -228,16 +201,5 @@ class AddEditTaskFragment : Fragment(R.layout.fragment_add_edit_task) {
 
     fun getUser() {
         viewModel.getCurrentUser()
-    }
-
-    private fun scheduleNotification(delay: Long, data: Data) {
-        val notificationWork = OneTimeWorkRequest.Builder(NotifyWork::class.java)
-            .setInitialDelay(delay, TimeUnit.MILLISECONDS).setInputData(data).build()
-
-        val instanceWorkManager = WorkManager.getInstance()
-        instanceWorkManager.beginUniqueWork(
-            NotifyWork.NOTIFICATION_WORK,
-            ExistingWorkPolicy.REPLACE, notificationWork
-        ).enqueue()
     }
 }

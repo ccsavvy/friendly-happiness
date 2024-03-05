@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.taskmanager.data.Task
+import com.example.taskmanager.di.Task
 import com.example.taskmanager.databinding.ItemTaskBinding
 
 

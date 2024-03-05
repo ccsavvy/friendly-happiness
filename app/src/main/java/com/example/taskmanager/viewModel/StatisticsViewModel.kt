@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.R
 import com.example.taskmanager.auth.AuthRepository
-import com.example.taskmanager.data.Task
+import com.example.taskmanager.di.Task
 import com.example.taskmanager.data.TaskDao
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet

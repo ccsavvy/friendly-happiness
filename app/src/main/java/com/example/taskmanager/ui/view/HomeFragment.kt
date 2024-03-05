@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.MainActivity
 import com.example.taskmanager.R
 import com.example.taskmanager.data.SortOrder
-import com.example.taskmanager.data.Task
+import com.example.taskmanager.di.Task
 import com.example.taskmanager.databinding.FragmentHomeBinding
 import com.example.taskmanager.ui.tasks.TaskAdapter
 import com.example.taskmanager.util.exhaustive
